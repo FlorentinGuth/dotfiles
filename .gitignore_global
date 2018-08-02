@@ -1,0 +1,19 @@
+# Emacs bullshit
+=9.0
+GPATH
+GRTAGS
+GSYMS
+GTAGS
+cscope*
+
+.ycm_extra_conf.py
+compile_commands.json
+
+cpl
+regen
+ptbuild
+slf
+sleep
+
+_*
+port-file-list.py
