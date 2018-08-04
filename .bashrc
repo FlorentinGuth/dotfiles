@@ -8,9 +8,6 @@ case $- in
       *) return;;
 esac
 
-# Setup emacs for terminal use.
-export TERM=xterm-256color
-
 # don't put duplicate lines or lines starting with space in the history.
 # See bash(1) for more options
 HISTCONTROL=ignoreboth
@@ -118,44 +115,3 @@ if ! shopt -oq posix; then
     . /etc/bash_completion
   fi
 fi
-
-# Default editor.
-# export VISUAL=emacs
-# export EDITOR="$VISUAL"
-
-# Load modules.
-module purge
-module load anaconda3
-module load openmpi/3.0.0/gcc.5.4.0 singularity/2.4.2/gcc.5.4.0
-module load cherrypi-workspace
-# module load cuda cudnn NCCL
-# Load python environment
-source /private/home/misterabc/usr/activate
-source activate py36
-
-export TZ=UTC
-
-# Supposedly cool
-export PATH="/usr/lib/ccache:$PATH"
-
-alias reload='source ~/.bashrc'
-
-# Useful aliases.
-alias gt='cd ~/FAIR_rush'
-# alias cpirun='singularity exec --nv -B /checkpoint:/checkpoint -B /checkpoint02:/checkpoint02 -B /datasets01:/datasets01 /checkpoint/starcraft/cherrypi.img'
-alias cpirun='cpiws exec'
-# alias cpish='singularity shell --nv -B /checkpoint:/checkpoint -B /checkpoint02:/checkpoint02 -B /datasets01:/datasets01 /checkpoint/starcraft/cherrypi.img'
-alias cpish='cpiws shell ~/FAIR_rush'
-
-alias sq="squeue -u fguth -o '%.12i %.9P %.30j %.2t %.10M %R'"
-alias sc="scancel -u fguth"
-alias scount="echo There are $(($(sq | wc -l) - 1)) jobs runnning."
-
-alias sub="python3 slurm/submit"
-
-alias vis="python -m visdom.server -logging_level=CRITICAL &"
-
-alias killbwapi="kill -9 `pidof BWAPILauncher`"
-
-export CP="/private/home/fguth/Dropbox/StarCraft/tactics/clipboard.txt"
-alias copy="cat > ${CP}"

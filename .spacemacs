@@ -33,52 +33,95 @@ This function should only modify configuration layer settings."
 
    ;; List of configuration layers to load.
    dotspacemacs-configuration-layers
-   '(yaml
-     markdown
-     javascript
-     (spell-checking :variables
-                     enable-flyspell-auto-completion nil
-                     )
-     syntax-checking
-     semantic
-     ;; nlinum
-     (auto-completion :variables
-                      auto-completion-enable-help-tooltip t
-                      auto-completion-enable-sort-by-usage t
-                      auto-completion-enable-snippets-in-popup t
-                      )
-     ycmd
-     helm
-     git
-     github
-     (version-control :variables
-                      version-control-global-margin t
-                      version-control-diff-tool 'git-gutter
-                      )
-     cscope
-     gtags
-     cmake
-     imenu-list
-
-     colors
-     themes-megapack
-     dash
-     shell
-     neotree
-     (shell :variables
-            shell-default-shell 'multi-term
-            )
-     tmux
-
-     emacs-lisp
-     shell-scripts
+   '(
+     ;; ------------------------------------------------------------------------
+     ;; Programming languages
+     ;; ------------------------------------------------------------------------
+     (python :variables
+             python-enable-yapf-format-on-save nil
+             )
+     ocaml
+     (haskell :variables
+              haskell-completion-backend 'intero ;; Can be 'intero, 'ghci or 'ghc-mod (default 'ghci)
+              haskell-enable-hindent-style "johan-tibell" ;; Can be "fundamental", "johan-tibell", "chris-done" or "gibiansky"
+              haskell-process-type 'stack-ghci
+              )
+     coq
      (c-c++ :variables
             c-c++-default-mode-for-headers 'c++-mode
             c-c++-enable-clang-support t
             c-c++-enable-c++11 t
             )
-     (python :variables
-             python-enable-yapf-format-on-save nil
+     (go :variables
+         go-use-gometalinter t
+         godoc-at-point-function 'godoc-gogetdoc
+         )
+     asm
+     emacs-lisp
+     shell-scripts
+     html
+     javascript
+     ;; ------------------------------------------------------------------------
+     ;; Rich text
+     ;; ------------------------------------------------------------------------
+     markdown
+     org
+     yaml
+     ;; ------------------------------------------------------------------------
+     ;; Auto-completion
+     ;; ------------------------------------------------------------------------
+     helm
+     (auto-completion :variables
+                      auto-completion-enable-snippets-in-popup t
+                      auto-completion-enable-help-tooltip t
+                      auto-completion-enable-sort-by-usage t
+                      )
+     ycmd
+     ;; ------------------------------------------------------------------------
+     ;; Checking
+     ;;-------------------------------------------------------------------------
+     (spell-checking :variables
+                     ;; spell-checking-enable-auto-dictionary t ;; Causes hangs
+                     enable-flyspell-auto-completion t
+                     )
+     syntax-checking
+     ;; ------------------------------------------------------------------------
+     ;; Editing
+     ;; ------------------------------------------------------------------------
+     latex
+     markdown                 ;; For editing HTML-like text
+     org                      ;; Rich plain text (to-do lists, bullets...)
+     ;; ------------------------------------------------------------------------
+     ;; Source control
+     ;; ------------------------------------------------------------------------
+     (version-control :variables
+                      version-control-global-margin t
+                      ;; Disabled because creates unbearable lag
+                      ;; version-control-diff-tool 'git-gutter
+                      )
+     git
+     github
+     ;; ------------------------------------------------------------------------
+     ;; Tools
+     ;; ------------------------------------------------------------------------
+     dash                     ;; Documentation lookup
+     semantic                 ;; Display current function
+     cscope                   ;; Navigation
+     gtags                    ;; Tagging source files
+     cmake
+     imenu-list
+     (shell :variables
+            shell-default-shell 'multi-term
+            )
+     tmux
+     graphviz
+     neotree
+     ;; ------------------------------------------------------------------------
+     ;; Themes
+     ;; ------------------------------------------------------------------------
+     themes-megapack
+     (colors :variables
+             colors-colorize-identifiers 'variables
              )
      )
 
@@ -91,8 +134,35 @@ This function should only modify configuration layer settings."
    ;; Also include the dependencies as they will not be resolved automatically.
    dotspacemacs-additional-packages
    '(
-     ;; Bundle of snippets.
-     yasnippet-snippets
+     figlet               ;; ASCII art
+     yasnippet-snippets   ;; Bundle of snippets
+     ;; Haskell
+     ;; For some reason it is not found?
+     ;; structured-haskell-mode ;; Enable AST edits
+
+     ;; iso-transl        ;; Adds dead-keys support (^, ~)
+     ;; ------------------------------------------------------------------------
+     ;; Packages to investigate
+     ;; ------------------------------------------------------------------------
+     ;; golden-ratio: automatically expands the current window to make it larger
+     ;; indent-guide: fun
+     ;; smart-parens: look at what it does
+     ;; sublimity: minimap
+     ;; something to manage .spacemacs across computers?
+     ;; something for tabs (tabs as white-spaces, allows to insert instead of indenting)
+     ;; keyboard-layout: provide bindings for bepo, might add azerty
+     ;; ipython-notebook: jupyter in emacs!
+     ;; octave or extra-langs (MATLAB)
+     ;; ------------------------------------------------------------------------
+     ;; To learn
+     ;; ------------------------------------------------------------------------
+     ;; bookmarks: save locations in files
+     ;; projectile,: manage a project
+     ;; layouts, workspaces: ?
+     ;; vim key bindings
+     ;; emacs key bindings in hybrid state?
+     ;; org layer for todo-lists, enriched plain text
+     ;; keybindings for magit, company, ...
      )
 
    ;; A list of packages that cannot be updated.
@@ -101,7 +171,8 @@ This function should only modify configuration layer settings."
    ;; A list of packages that will not be installed and loaded.
    dotspacemacs-excluded-packages
    '(
-     evil-escape ; Can press fd without quitting normal mode.
+     ;; Prevents 'fd' from quitting insert state
+     evil-escape
      )
 
    ;; Defines the behaviour of Spacemacs when installing packages.
@@ -111,9 +182,7 @@ This function should only modify configuration layer settings."
    ;; installs only the used packages but won't delete unused ones. `all'
    ;; installs *all* packages supported by Spacemacs and never uninstalls them.
    ;; (default is `used-only')
-   dotspacemacs-install-packages 'used-only
-   )
-  )
+   dotspacemacs-install-packages 'used-only))
 
 (defun dotspacemacs/init ()
   "Initialization:
@@ -173,7 +242,7 @@ It should only modify the values of Spacemacs settings."
    ;; when the current branch is not `develop'. Note that checking for
    ;; new versions works via git commands, thus it calls GitHub services
    ;; whenever you start Emacs. (default nil)
-   dotspacemacs-check-for-update nil
+   dotspacemacs-check-for-update t
 
    ;; If non-nil, a form that evaluates to a package directory. For example, to
    ;; use different package directories for different Emacs versions, set this
@@ -205,8 +274,8 @@ It should only modify the values of Spacemacs settings."
    ;; `recents' `bookmarks' `projects' `agenda' `todos'.
    ;; List sizes may be nil, in which case
    ;; `spacemacs-buffer-startup-lists-length' takes effect.
-   dotspacemacs-startup-lists '((recents . 20)
-                                (projects . 7))
+   dotspacemacs-startup-lists '((recents . 10)
+                                (projects . 5))
 
    ;; True if the home buffer should respond to resize events. (default t)
    dotspacemacs-startup-buffer-responsive t
@@ -221,8 +290,11 @@ It should only modify the values of Spacemacs settings."
    ;; List of themes, the first of the list is loaded when spacemacs starts.
    ;; Press `SPC T n' to cycle to the next theme in the list (works great
    ;; with 2 themes variants, one dark and one light)
-   dotspacemacs-themes '(spacemacs-dark
-                         monokai)
+   dotspacemacs-themes
+   '(
+     spacemacs-dark
+     monokai
+     )
 
    ;; Set the theme for the Spaceline. Supported themes are `spacemacs',
    ;; `all-the-icons', `custom', `vim-powerline' and `vanilla'. The first three
@@ -341,7 +413,7 @@ It should only modify the values of Spacemacs settings."
    ;; If non-nil the frame is maximized when Emacs starts up.
    ;; Takes effect only if `dotspacemacs-fullscreen-at-startup' is nil.
    ;; (default nil) (Emacs 24.4+ only)
-   dotspacemacs-maximized-at-startup nil
+   dotspacemacs-maximized-at-startup t
 
    ;; A value from the range (0..100), in increasing opacity, which describes
    ;; the transparency level of a frame when it's active or selected.
@@ -382,7 +454,8 @@ It should only modify the values of Spacemacs settings."
    ;;                       text-mode
    ;;   :size-limit-kb 1000)
    ;; (default nil)
-   dotspacemacs-line-numbers 'relative
+   dotspacemacs-line-numbers '(:relative t
+                               :size-limit-kb 1000)
 
    ;; Code folding method. Possible values are `evil' and `origami'.
    ;; (default 'evil)
@@ -459,7 +532,7 @@ It should only modify the values of Spacemacs settings."
    ;; Run `spacemacs/prettify-org-buffer' when
    ;; visiting README.org files of Spacemacs.
    ;; (default nil)
-   dotspacemacs-pretty-docs nil))
+   dotspacemacs-pretty-docs t))
 
 (defun dotspacemacs/user-env ()
   "Environment variables setup.
@@ -490,10 +563,37 @@ This function is called at the very end of Spacemacs startup, after layer
 configuration.
 Put your configuration code here, except for variables that should be set
 before packages are loaded."
+  ;; ---------------------------------------------------------------------------
+  ;; Editing defaults
+  ;; ---------------------------------------------------------------------------
 
-  ;; End doesn't work inside tmux but this does not fix it
-  ;; (global-set-key (kbd "<home>") 'beginning-of-line)
-  ;; (global-set-key (kbd "<end>") 'end-of-line)
+  ;; Setting default state in hybrid mode (default 'normal)
+  ;; (setq-default hybrid-mode-default-state 'hybrid)
+
+  ;; Enables h-j-k-l bindings (default nil)
+  (setq-default hybrid-mode-enable-hjkl-bindings t)
+
+  ;; Enables evilified states (default t)
+  (setq-default hybrid-mode-enable-evilified-state t)
+
+  ;; Indenting with spaces instead of tabs (default t)
+  (setq-default indent-tabs-mode nil)
+
+  ;; Setting tab-width to 4 spaces
+  (setq-default tab-width 4)
+
+  ;; Using camelCase word splitting and motion
+  (setq-default camel-case-motion t)
+  (spacemacs/toggle-camel-case-motion-globally-on)
+
+  ;; Enable visual line
+  ;; Doesn't work for some reason?
+  (setq-default visual-line-mode t)
+  ;; Visual motion.
+  (spacemacs/toggle-visual-line-navigation-on)
+
+  ;; Don't remember what this is for
+  (setq redisplay-dont-pause t)
 
   ;; No redisplay on recenter
   (setq-default recenter-redisplay nil)
@@ -501,62 +601,18 @@ before packages are loaded."
   ;; Enable clipboard in emacs.
   (setq x-select-enable-clipboard t)
 
-  ;; linum vs git-gutter tricks
-  (progn
-    ;; Linum
-
-    (setq-default
-     linum-format "%4d \u2502"
-     linum-relative-format "%4s \u2502"
-     ))
-
-  (progn
-    ;; Git Gutter
-    (set-face-attribute
-     'git-gutter:added nil :background nil :foreground "green")
-    (set-face-attribute
-     'git-gutter:deleted nil :background nil :foreground "red")
-    (set-face-attribute
-     'git-gutter:modified nil :background nil :foreground "blue")
-
-    (setq-default
-     git-gutter:modified-sign "!"
-     ))
-
-  ;; Enable camel-case motion.
-  (spacemacs/toggle-camel-case-motion-globally-on)
-
   ;; Indent guide.
   (spacemacs/toggle-indent-guide-globally-on)
 
-  ;; Visual motion.
-  (spacemacs/toggle-visual-line-navigation-on)
-
-  ;; Proper powerline separator
-  (setq powerline-default-separator nil)
-
-  ;; Fuzzy auto-completion matching on C-/ instead of undo.
-  ;; (eval-after-load "undo-tree-mode"
-  ;;   '(define-key undo-tree-map (kbd "C-/") nil))
-  ;; (global-set-key [C-/] 'helm-company)
-
-  ;; Disable auto-newline (after ';')
-  (add-hook 'c++-mode-hook (lambda () (c-toggle-auto-newline -1)))
-
-  ;; Nicer faces for company.
-  (custom-set-faces
-   '(company-tooltip-common
-     ((t (:inherit company-tooltip :weight bold :underline nil))))
-   '(company-tooltip-common-selection
-     ((t (:inherit company-tooltip-selection :weight bold :underline nil)))))
-
   ;; Enclose selected text in delimiters.
+  ;; Disabled because collide with other functions.
   ;; (global-set-key (kbd "M-[") 'insert-pair)
   ;; (global-set-key (kbd "M-{") 'insert-pair)
   ;; (global-set-key (kbd "M-\"") 'insert-pair)
   ;; (global-set-key (kbd "M-<") 'insert-pair)
 
   ;; Move forward and backward args.
+  ;; Disabled because collide with other functions.
   ;; (define-key evil-inner-text-objects-map "a" 'evil-inner-arg)
   ;; (define-key evil-outer-text-objects-map "a" 'evil-outer-arg)
   ;; (define-key evil-normal-state-map "L" 'evil-forward-arg)
@@ -565,12 +621,95 @@ before packages are loaded."
   ;; (define-key evil-motion-state-map "H" 'evil-backward-arg)
   ;; (define-key evil-normal-state-map "K" 'evil-jump-out-args)
 
+  ;; ---------------------------------------------------------------------------
+  ;; auto-completion
+  ;; ---------------------------------------------------------------------------
+
+  ;; Workaround helm bug.
+  (require 'helm-bookmark)
+
+  ;; By default, company is used
+  ;; Supposedly adds nicer faces
+  (custom-set-faces
+   '(company-tooltip-common
+     ((t (:inherit company-tooltip :weight bold :underline nil))))
+   '(company-tooltip-common-selection
+     ((t (:inherit company-tooltip-selection :weight bold :underline nil)))))
+
   ;; ycmd
   (setq ycmd-server-command '("python" "/private/home/fguth/ycmd/ycmd"))
   (setq ycmd-extra-conf-whitelist '("/private/home/fguth/FAIR_rush/*"))
   (setq ycmd-force-semantic-completion t)
 
-  (setq redisplay-dont-pause t)
+  ;; Fuzzy auto-completion matching on C-/ instead of undo.
+  ;; Doesn't work...
+  ;; (eval-after-load "undo-tree-mode"
+  ;;   '(define-key undo-tree-map (kbd "C-/") nil))
+  ;; (global-set-key [C-/] 'helm-company)
+
+  ;; ---------------------------------------------------------------------------
+  ;; dash
+  ;; ---------------------------------------------------------------------------
+
+  ;; Doesn't work?
+  ;; (dash/helm-dash-docset-newpath "/home/kegnarok/.local/share/Zeal/Zeal/docsets")
+
+  ;; ---------------------------------------------------------------------------
+  ;; OCaml
+  ;; ---------------------------------------------------------------------------
+
+  ;; Add tuareg-mode to prog-mode
+  (add-hook 'tuareg-mode-hook
+            (lambda () (run-hooks 'prog-mode-hook)))
+  ;; Disabled because of the following error:
+  ;; Error in dotspacemacs/user-config: Wrong type argument: vectorp, tuareg-abbrev-table
+  ;; (eval-after-load 'tuareg-mode
+  ;;   (abbrev-table-put 'tuareg-abbrev-table
+  ;;                     :parents (list 'prog-mode-abbrev-table)))
+  (put 'tuareg-mode 'derived-mode-parent 'prog-mode)
+
+  ;; ---------------------------------------------------------------------------
+  ;; Haskell
+  ;; ---------------------------------------------------------------------------
+
+  ;; Automatically enable company-ghci
+  (add-hook 'haskell-mode-hook (lambda () (haskell-process-load-or-reload)))
+
+  ;; ---------------------------------------------------------------------------
+  ;; C-C++
+  ;; ---------------------------------------------------------------------------
+
+  ;; Disable auto-newline (after ';')
+  (add-hook 'c++-mode-hook (lambda () (c-toggle-auto-newline -1)))
+
+  ;; ---------------------------------------------------------------------------
+  ;; LaTeX
+  ;; ---------------------------------------------------------------------------
+
+  ;; Full document previews
+  (add-hook 'doc-view-minor-mode-hook 'auto-revert-mode)
+
+  ;; Enable auto-fill (word wrap)
+  ;; (setq-default latex-enable-auto-fill t)
+  ;; Enable folding
+  (setq-default latex-enable-folding t)
+
+  ;; ---------------------------------------------------------------------------
+  ;; Git
+  ;; ---------------------------------------------------------------------------
+
+  ;; linum vs git-gutter tricks (in terminal)
+  ;; (setq-default
+  ;;  linum-format "%4d \u2502"
+  ;;  linum-relative-format "%4s \u2502"
+  ;;  )
+  ;; (set-face-attribute
+  ;;  'git-gutter:added nil :background nil :foreground "green")
+  ;; (set-face-attribute
+  ;;  'git-gutter:deleted nil :background nil :foreground "red")
+  ;; (set-face-attribute
+  ;;  'git-gutter:modified nil :background nil :foreground "blue")
+  ;; (setq-default git-gutter:modified-sign "!")
   )
 
 ;; Do not write anything past this comment. This is where Emacs will
@@ -586,11 +725,12 @@ This function is called at the very end of Spacemacs initialization."
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(yasnippet-snippets toc-org string-inflection srefactor solarized-theme pyvenv pippel pipenv org-bullets neotree moe-theme mmm-mode magithub magit-gh-pulls live-py-mode kaolin-themes json-mode hl-todo highlight-parentheses helm-projectile gruvbox-theme git-link flycheck-rtags flycheck-pos-tip expand-region evil-nerd-commenter evil-magit evil-goggles editorconfig dumb-jump dracula-theme doom-themes define-word darktooth-theme cyberpunk-theme counsel-projectile counsel swiper ivy company-anaconda color-theme-sanityinc-tomorrow cmake-mode cmake-ide browse-at-remote apropospriate-theme anti-zenburn-theme anaconda-mode aggressive-indent smartparens ycmd flycheck company projectile rtags helm helm-core yasnippet multiple-cursors avy skewer-mode js2-mode magit magit-popup git-commit ghub with-editor markdown-mode pythonic spaceline memoize which-key use-package org-plus-contrib evil hydra zenburn-theme zen-and-art-theme zeal-at-point yapfify yaml-mode xterm-color ws-butler winum white-sand-theme web-beautify volatile-highlights vi-tilde-fringe uuidgen undo-tree underwater-theme ujelly-theme twilight-theme twilight-bright-theme twilight-anti-bright-theme toxi-theme tao-theme tangotango-theme tango-plus-theme tango-2-theme symon sunny-day-theme sublime-themes subatomic256-theme subatomic-theme stickyfunc-enhance spaceline-all-the-icons spacegray-theme soothe-theme soft-stone-theme soft-morning-theme soft-charcoal-theme smyx-theme smeargle simple-httpd shell-pop seti-theme reverse-theme restart-emacs request-deferred rebecca-theme rainbow-mode rainbow-identifiers rainbow-delimiters railscasts-theme pytest pyenv-mode py-isort purple-haze-theme professional-theme powerline popwin planet-theme pip-requirements phoenix-dark-pink-theme phoenix-dark-mono-theme persp-mode pcre2el password-generator paradox overseer organic-green-theme open-junk-file omtose-phellack-theme oldlace-theme occidental-theme obsidian-theme noctilux-theme naquadah-theme nameless mustang-theme multi-term move-text monokai-theme monochrome-theme molokai-theme minimal-theme material-theme markdown-toc majapahit-theme magit-svn magit-gitflow madhat2r-theme macrostep lush-theme lorem-ipsum livid-mode link-hint light-soap-theme levenshtein json-snatcher json-reformat json-navigator js2-refactor js-doc jbeans-theme jazz-theme ir-black-theme insert-shebang inkpot-theme indent-guide importmagic hungry-delete highlight-numbers highlight-indentation heroku-theme hemisu-theme helm-xref helm-themes helm-swoop helm-rtags helm-pydoc helm-purpose helm-mode-manager helm-make helm-gtags helm-gitignore helm-flx helm-descbinds helm-dash helm-ctest helm-cscope helm-company helm-c-yasnippet helm-ag hc-zenburn-theme gruber-darker-theme grandshell-theme goto-chg gotham-theme google-translate google-c-style golden-ratio gitignore-templates github-search github-clone gitconfig-mode gitattributes-mode git-timemachine git-messenger git-gutter-fringe git-gutter-fringe+ gist ghub+ gh-md ggtags gandalf-theme fuzzy font-lock+ flyspell-correct-helm flycheck-ycmd flycheck-bashate flx-ido flatui-theme flatland-theme fish-mode fill-column-indicator farmhouse-theme fancy-battery eziam-theme eyebrowse exotica-theme evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-numbers evil-mc evil-matchit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-exchange evil-cleverparens evil-args evil-anzu eval-sexp-fu espresso-theme eshell-z eshell-prompt-extras esh-help elisp-slime-nav dotenv-mode django-theme disaster diminish diff-hl darkokai-theme darkmine-theme darkburn-theme dakrone-theme cython-mode company-ycmd company-tern company-statistics company-shell company-rtags company-quickhelp company-c-headers column-enforce-mode color-theme-sanityinc-solarized color-identifiers-mode clues-theme clean-aindent-mode clang-format cherry-blossom-theme centered-cursor-mode busybee-theme bubbleberry-theme birds-of-paradise-plus-theme bind-key badwolf-theme autothemer auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile ample-zen-theme ample-theme alect-themes afternoon-theme ace-window ace-link ace-jump-helm-line ac-ispell)))
+   (quote
+    (xterm-color shell-pop multi-term helm-ctest flycheck-ycmd eshell-z eshell-prompt-extras esh-help company-ycmd ycmd request-deferred cmake-mode cmake-ide levenshtein zenburn-theme zen-and-art-theme zeal-at-point yasnippet-snippets yapfify yaml-mode x86-lookup ws-butler winum white-sand-theme which-key web-mode web-beautify volatile-highlights vi-tilde-fringe uuidgen utop use-package underwater-theme ujelly-theme twilight-theme twilight-bright-theme twilight-anti-bright-theme tuareg toxi-theme toc-org tao-theme tangotango-theme tango-plus-theme tango-2-theme tagedit symon sunny-day-theme sublime-themes subatomic256-theme subatomic-theme string-inflection stickyfunc-enhance srefactor spaceline-all-the-icons spacegray-theme soothe-theme solarized-theme soft-stone-theme soft-morning-theme soft-charcoal-theme smyx-theme smeargle slim-mode seti-theme scss-mode sass-mode reverse-theme restart-emacs rebecca-theme rainbow-mode rainbow-identifiers rainbow-delimiters railscasts-theme pyvenv pytest pyenv-mode py-isort purple-haze-theme pug-mode proof-general professional-theme popwin planet-theme pippel pipenv pip-requirements phoenix-dark-pink-theme phoenix-dark-mono-theme persp-mode pcre2el password-generator paradox overseer orgit organic-green-theme org-projectile org-present org-pomodoro org-mime org-download org-bullets org-brain open-junk-file omtose-phellack-theme oldlace-theme ocp-indent occidental-theme obsidian-theme noctilux-theme neotree nasm-mode naquadah-theme nameless mustang-theme move-text monokai-theme monochrome-theme molokai-theme moe-theme mmm-mode minimal-theme merlin material-theme markdown-toc majapahit-theme magithub magit-svn magit-gitflow magit-gh-pulls madhat2r-theme macrostep lush-theme lorem-ipsum livid-mode live-py-mode linum-relative link-hint light-soap-theme less-css-mode kaolin-themes json-navigator json-mode js2-refactor js-doc jbeans-theme jazz-theme ir-black-theme intero insert-shebang inkpot-theme indent-guide importmagic impatient-mode hungry-delete hlint-refactor hl-todo hindent highlight-parentheses highlight-numbers highlight-indentation heroku-theme hemisu-theme helm-xref helm-themes helm-swoop helm-rtags helm-pydoc helm-purpose helm-projectile helm-mode-manager helm-make helm-hoogle helm-gtags helm-gitignore helm-flx helm-descbinds helm-dash helm-css-scss helm-cscope helm-company helm-c-yasnippet helm-ag hc-zenburn-theme haskell-snippets gruvbox-theme gruber-darker-theme graphviz-dot-mode grandshell-theme gotham-theme google-translate google-c-style golden-ratio godoctor go-tag go-rename go-impl go-guru go-gen-test go-fill-struct go-eldoc gnuplot gitignore-templates github-search github-clone gitconfig-mode gitattributes-mode git-timemachine git-messenger git-link git-gutter-fringe git-gutter-fringe+ gist gh-md ggtags gandalf-theme fuzzy font-lock+ flyspell-popup flyspell-correct-helm flycheck-rtags flycheck-pos-tip flycheck-haskell flycheck-gometalinter flycheck-bashate flx-ido flatui-theme flatland-theme fish-mode fill-column-indicator figlet farmhouse-theme fancy-battery eziam-theme eyebrowse expand-region exotica-theme evil-visualstar evil-visual-mark-mode evil-unimpaired evil-tutor evil-surround evil-org evil-numbers evil-nerd-commenter evil-mc evil-matchit evil-magit evil-lisp-state evil-lion evil-indent-plus evil-iedit-state evil-goggles evil-exchange evil-cleverparens evil-args evil-anzu eval-sexp-fu espresso-theme emmet-mode elisp-slime-nav editorconfig dumb-jump dracula-theme dotenv-mode doom-themes django-theme disaster diminish diff-hl define-word darktooth-theme darkokai-theme darkmine-theme darkburn-theme dante dakrone-theme cython-mode cyberpunk-theme counsel-projectile company-web company-tern company-statistics company-shell company-rtags company-quickhelp company-go company-ghci company-ghc company-coq company-cabal company-c-headers company-auctex company-anaconda column-enforce-mode color-theme-sanityinc-tomorrow color-theme-sanityinc-solarized color-identifiers-mode cmm-mode clues-theme clean-aindent-mode clang-format cherry-blossom-theme centered-cursor-mode busybee-theme bubbleberry-theme browse-at-remote birds-of-paradise-plus-theme badwolf-theme auto-yasnippet auto-highlight-symbol auto-dictionary auto-compile auctex-latexmk apropospriate-theme anti-zenburn-theme ample-zen-theme ample-theme alect-themes aggressive-indent afternoon-theme ace-window ace-link ace-jump-helm-line ac-ispell))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(default ((t (:background nil)))))
+ )
 )

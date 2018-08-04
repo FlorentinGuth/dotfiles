@@ -1,6 +1,15 @@
+# Ignore everything by default
 *
-!.spacemacs
 !.gitignore
+
+# Editors
+!.spacemacs
+
+# Git
 !.gitignore_global
+!.gitconfig
+
+# Shells
 !.bashrc
+!.profile
 !.tmux.conf
